@@ -28,29 +28,77 @@ data-pipeline-retail/
 
 ## 🔄 Pipeline ETL
 
-### Transformaciones principales:
-- Normalización de nombres de columnas
-- Conversión de tipos de datos (fechas, numéricos)
-- Limpieza de nulos y duplicados
-- Creación de métricas calculadas (UnitPrice, MarginPct, YearMonth)
-
+### 1. Carga del dataset
 ```python
-# Ejemplo de transformación clave
-df["UnitPrice"] = np.where(df["Quantity"] > 0, df["Sales"] / df["Quantity"], 0)
-df["MarginPct"] = np.where(df["Sales"] != 0, df["Profit"] / df["Sales"], 0)
+import pandas as pd
+df = pd.read_csv("superstore.csv", encoding="utf-8")
+print(f"Dataset cargado: {df.shape}")
 ```
 
-## 📊 Dashboard - KPIs Principales
-- **Total Sales** - Ingresos totales
-- **Total Profit** - Ganancia total  
-- **Margin %** - Porcentaje de margen
-- **Avg Ticket** - Ticket promedio por orden
+### 2. Limpieza de columnas
+```python
+# Normalizar nombres de columnas
+df.columns = df.columns.str.strip().str.replace(" ", "_")
+
+# Convertir fechas
+df["OrderDate"] = pd.to_datetime(df["OrderDate"], errors="coerce")
+df["ShipDate"] = pd.to_datetime(df["ShipDate"], errors="coerce")
+
+# Convertir numéricos
+for col in ["Sales", "Profit", "Discount", "Quantity"]:
+    df[col] = pd.to_numeric(df[col], errors="coerce")
+```
+
+### 3. Manejo de nulos y duplicados
+```python
+# Eliminar filas sin valores clave
+df = df.dropna(subset=["OrderID", "OrderDate", "CustomerID", "ProductID", "Sales", "Quantity"])
+
+# Rellenar nulos no críticos
+df["Discount"] = df["Discount"].fillna(0)
+df["Profit"] = df["Profit"].fillna(0)
+
+# Eliminar duplicados
+df = df.drop_duplicates(subset=["OrderID", "ProductID"])
+```
+
+### 4. Features adicionales
+```python
+import numpy as np
+
+# Calcular precio unitario
+df["UnitPrice"] = np.where(df["Quantity"] > 0, df["Sales"] / df["Quantity"], 0)
+
+# Calcular margen porcentual
+df["MarginPct"] = np.where(df["Sales"] != 0, df["Profit"] / df["Sales"], 0)
+
+# Crear período año-mes
+df["YearMonth"] = df["OrderDate"].dt.to_period("M").astype(str)
+```
+
+### 5. Exportación
+```python
+df.to_csv("superstore_clean.csv", index=False)
+print("Dataset limpio exportado exitosamente")
+```
+
+## 📊 Dashboard - KPIs y Visualizaciones
+
+### KPIs principales (Power BI DAX):
+```dax
+Total Sales = SUM(Sales)
+Total Profit = SUM(Profit)
+Total Quantity = SUM(Quantity)
+Margin % = DIVIDE([Total Profit], [Total Sales])
+Avg Ticket = DIVIDE([Total Sales], DISTINCTCOUNT(OrderID))
+```
 
 ### Visualizaciones incluidas:
-- Tendencia de ventas mensuales
-- Top 10 productos más vendidos
-- Análisis por categoría y región
-- Segmentadores interactivos
+- **Tendencia temporal** - Ventas mensuales por fecha
+- **Ranking de productos** - Top 10 productos más vendidos
+- **Análisis de clientes** - Clientes frecuentes por ventas y órdenes
+- **Distribución por categoría** - Participación en ventas
+- **Filtros interactivos** - Año, Región, Categoría, Segmento
 
 ## 🚀 Uso Rápido
 
