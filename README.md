@@ -84,6 +84,8 @@ print("Dataset limpio exportado exitosamente")
 
 ## 📊 Dashboard - KPIs y Visualizaciones
 
+![Dashboard Overview](screenshots/dashboard_overview.png)
+
 ### KPIs principales (Power BI DAX):
 ```dax
 Total Sales = SUM(Sales)
@@ -121,4 +123,5 @@ Avg Ticket = DIVIDE([Total Sales], DISTINCTCOUNT(OrderID))
 - Análisis de estacionalidad en ventas
 - Segmentación de clientes por valor
 
-
+---
+**Autor:** [Tu Nombre](mailto:tuemail@correo.com) | [LinkedIn](tu-linkedin) | [GitHub](tu-github)
