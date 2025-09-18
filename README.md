@@ -121,5 +121,4 @@ Avg Ticket = DIVIDE([Total Sales], DISTINCTCOUNT(OrderID))
 - Análisis de estacionalidad en ventas
 - Segmentación de clientes por valor
 
----
-**Autor:** [Tu Nombre](mailto:tuemail@correo.com) | [LinkedIn](tu-linkedin) | [GitHub](tu-github)
+
